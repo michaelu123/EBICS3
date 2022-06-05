@@ -9,6 +9,7 @@ from xml.dom.minidom import *
 
 import gsheetsMTT2
 import gsheetsRFSA
+import gsheetsRFSAFP
 import gsheetsRFSF
 import gsheetsSaisonKarte
 import gsheetsTK
@@ -141,6 +142,7 @@ def convertToIsoDate(ts):  # 06.03.2022 17:28:38 -> 2022-03-06
 
 klasses = {
     "RFSA": gsheetsRFSA.GSheetRFSA,
+    "RFSAFP": gsheetsRFSAFP.GSheetRFSAFP,
     "RFSF": gsheetsRFSF.GSheetRFSF,
     "SK": gsheetsSaisonKarte.GSheetSK,
     "TK": gsheetsTK.GSheetTK,

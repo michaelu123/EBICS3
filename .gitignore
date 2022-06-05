@@ -6,9 +6,9 @@
 
 /src/Anlage_3_Datenformate_V3.5.pdf
 /src/Google-Skripten/
-/src/*credentials*
-/src/*xml*
-/src/*xlsx*
+/src/credentials*
+/src/*xml
+/src/*xlsx
 /src/*password*
 /src/serviceaccount.json
 /src/token.pickle
