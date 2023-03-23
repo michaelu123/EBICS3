@@ -59,7 +59,6 @@ class GSheet:
         self.eingez = []
 
         self.spreadSheetId = ""
-        self.spreadSheetName = ""
 
         # diese Felder brauchen wir für den Einzug
         self.ebicsnames = []
@@ -123,7 +122,7 @@ class GSheet:
                             rows[j][0] = "Notiz"
                 self.data[sname] = rows
             except Exception as e:
-                logging.exception("Kann Arbeitsblatt " + self.spreadSheetName + "/" + sname + " nicht laden")
+                logging.exception("Kann Arbeitsblatt " + sname + " nicht laden")
                 raise e
 
     def checkColumns(self):

@@ -5,7 +5,6 @@ class GSheetRFSA(gsheets.GSheet):
     def __init__(self, stdBetrag, stdZweck):
         super().__init__(stdBetrag, stdZweck)
         self.spreadSheetId = "163EnaAw4A0_BP6zuo51VSyz02MNHTfI3_t8MyQ2JUP4"
-        self.spreadSheetName = "RFS_1A Backend"
 
         # diese Felder brauchen wir für den Einzug
         self.ebicsnames = ebicsnames = ["Lastschrift: Name des Kontoinhabers",
@@ -34,7 +33,7 @@ class GSheetRFSA(gsheets.GSheet):
 
     @classmethod
     def getDefaults(cls):
-        return "100", "ADFC Radfahrschule", "ADFC-M-RFS-2022"
+        return "100", "ADFC Radfahrschule", "ADFC-M-RFS-2023"
 
     def validSheetName(self, sname):
         return sname == "Buchungen"

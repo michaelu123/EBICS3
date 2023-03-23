@@ -7,7 +7,6 @@ class GSheetRFSF(gsheets.GSheet):
     def __init__(self, stdBetrag, stdZweck):
         super().__init__(stdBetrag, stdZweck)
         self.spreadSheetId = "1K5wHJrEP0vP-tuM7gqSOUdEfq7OzFt5iCjnnjyzWzxA"
-        self.spreadSheetName = "RFS_1F Backend"
         self.kursFrage = "Welchen Kurs möchten Sie belegen?"
         # diese Felder brauchen wir für den Einzug
         self.ebicsnames = ebicsnames = ["Lastschrift: Name des Kontoinhabers", "Lastschrift: IBAN-Kontonummer",
@@ -38,7 +37,7 @@ class GSheetRFSF(gsheets.GSheet):
 
     @classmethod
     def getDefaults(cls):
-        return "15/30 oder 20/40", "ADFC Radfahrschule", "ADFC-M-RFS-2022"
+        return "15/30 oder 20/40", "ADFC Radfahrschule", "ADFC-M-RFS-2023"
 
     def validSheetName(self, sname):
         return sname == "Buchungen"
@@ -57,7 +56,7 @@ class GSheetRFSF(gsheets.GSheet):
                 row[self.betrag] = "15" if mitglied else "30"
             elif kurs.endswith('A'):
                 row[self.betrag] = "20" if mitglied else "40"
-            elif kurs.endswith('P'):
+            elif kurs.endswith('S'):
                 row[self.betrag] = "15" if mitglied else "30"
             else:
                 showerror("Kursname", "Unbekannt:" + kurs)

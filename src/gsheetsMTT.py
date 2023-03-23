@@ -8,7 +8,6 @@ class GSheetMTT(gsheets.GSheet):
     def __init__(self, _stdBetrag, stdZweck):
         super().__init__("", stdZweck)
         self.spreadSheetId = "1LNopZRbkggBm4OtRRp-YtRBFKKv1z8no0xLEhk-K8mo"  # Backend-Technikkurse
-        self.spreadSheetName = "Backend-MTT"
 
         # Buchungen
         # diese Felder brauchen wir für den Einzug
@@ -56,7 +55,7 @@ class GSheetMTT(gsheets.GSheet):
 
     @classmethod
     def getDefaults(cls):
-        return "je nach Reise", "ADFC Mehrtagestouren", "ADFC-M-MTT-2022"
+        return "je nach Reise", "ADFC Mehrtagestouren", "ADFC-M-MTT-2023"
 
     def validSheetName(self, sname):
         return sname == "Buchungen" or sname == "Reisen"

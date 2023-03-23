@@ -6,7 +6,6 @@ class GSheetTK(gsheets.GSheet):
     def __init__(self, _stdBetrag, stdZweck):
         super().__init__("", stdZweck)
         self.spreadSheetId = "1r4WEgWskyJrHNRgWLOZ2n7pgho-8S6kSo7cm1po1pt4"  # Backend-Technikkurse
-        self.spreadSheetName = "Backend-Technikkurse"
 
         # diese Felder brauchen wir für den Einzug
         self.ebicsnames = ebicsnames = ["Name des Kontoinhabers", "IBAN-Kontonummer", "Betrag", "Zweck", "Zeitstempel"]
@@ -36,7 +35,7 @@ class GSheetTK(gsheets.GSheet):
 
     @classmethod
     def getDefaults(cls):
-        return "10/15", "ADFC Technikkurse", "ADFC-M-TK-2022"
+        return "10/15", "ADFC Technikkurse", "ADFC-M-TK-2023"
 
     def validSheetName(self, sname):
         return sname.startswith("Buchungen")
