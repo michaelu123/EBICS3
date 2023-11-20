@@ -38,10 +38,12 @@ class GSheetMTT(gsheets.GSheet):
 
         # diese Felder fügen wir hinzu
         self.zusatzFelder = zusatzFelder = ["Eingezogen", "Zahlungseingang",
-                                            "Kommentar"]
+                                            "Kommentar", "Zahlungsbetrag"]
         self.eingezogen = zusatzFelder[0]
         self.zahlungseingang = zusatzFelder[1]  # händisch
         self.kommentar = zusatzFelder[2]
+        self.zahlungsbetrag = zusatzFelder[3]
+
 
         # Reisen
         self.reisenNames = reisennames = ["Reise", "DZ-Preis", "EZ-Preis"]

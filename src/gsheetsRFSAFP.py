@@ -26,10 +26,11 @@ class GSheetRFSAFP(gsheets.GSheet):
         self.anmeldebest = formnames[5]  # wird vom Skript Radfahrschule/Anmeldebestätigung senden ausgefüllt
 
         # diese Felder fügen wir hinzu
-        self.zusatzFelder = zusatzFelder = ["Eingezogen", "Zahlungseingang", "Kommentar"]
+        self.zusatzFelder = zusatzFelder = ["Eingezogen", "Zahlungseingang", "Kommentar", "Zahlungsbetrag"]
         self.eingezogen = zusatzFelder[0]
         self.zahlungseingang = zusatzFelder[1]  # händisch
         self.kommentar = zusatzFelder[2]
+        self.zahlungsbetrag = zusatzFelder[3]
 
     @classmethod
     def getDefaults(cls):

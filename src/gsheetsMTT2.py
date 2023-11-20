@@ -1,6 +1,7 @@
 from tkinter.messagebox import *
 from tkinter.filedialog import askopenfilename
 from gsheets import is_iban
+from decimal import Decimal, getcontext
 import openpyxl
 
 
@@ -85,7 +86,7 @@ class GSheetMTT2:
             if betrag >= 0:
                 showerror("Betrag ungültig", "Betrag " + str(betrag) + " ist nicht negativ")
                 continue
-            buchung[self.betrag] = -betrag
+            buchung[self.betrag] = Decimal(-betrag)
             buchung[self.zweck] = "ADFC Mehrtagestour " + self.reisenName.replace("-", " ")
             buchung["mandat"] = self.mandat
             entries.append(buchung)

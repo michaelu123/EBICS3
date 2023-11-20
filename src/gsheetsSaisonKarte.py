@@ -25,10 +25,11 @@ class GSheetSK(gsheets.GSheet):
         self.gesendet = formnames[4]  # wird vom Skript der Tabelle ausgefüllt
 
         # diese Felder fügen wir hinzu
-        self.zusatzFelder = zusatzFelder = ["Abgebucht", "Bezahlt", "Kommentar"]
+        self.zusatzFelder = zusatzFelder = ["Abgebucht", "Bezahlt", "Kommentar", "Zahlungsbetrag"]
         self.eingezogen = zusatzFelder[0]
         self.zahlungseingang = zusatzFelder[1]  # händisch
         self.kommentar = zusatzFelder[2]
+        self.zahlungsbetrag = zusatzFelder[3]
 
     @classmethod
     def getDefaults(cls):

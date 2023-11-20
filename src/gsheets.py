@@ -75,6 +75,7 @@ class GSheet:
         self.zusatzFelder = []
         self.eingezogen = ""
         self.zahlungseingang = ""
+        self.zahlungsbetrag = ""
 
     def getStatistics(self):
         return self.nr_einzug, self.nr_unverifiziert, self.nr_bezahlt, self.nr_eingezogen, self.nr_einzuziehen
@@ -148,6 +149,8 @@ class GSheet:
         return True
 
     def checkRow(self, row):
+        if self.eingezogen in row and row[self.eingezogen] == "":
+            pass
         # IBAN angegeben?
         if self.iban not in row.keys() or row[self.iban] == "":
             return False
@@ -192,6 +195,7 @@ class GSheet:
             headers = srows[0]
             try:
                 eingezogenX = headers.index(self.eingezogen)
+                zahlungsbetragX = headers.index(self.zahlungsbetrag)
             except:
                 continue
             for r, srow in enumerate(srows[1:]):
@@ -214,7 +218,7 @@ class GSheet:
                     # Hier können wir einziehen!
                     vals.append({x: row[x] for x in self.ebicsnames})
                     # Merken wo das Eingezogen-Datum gespeichert wird, nachdem ebics.xml geschrieben wurde
-                    self.eingez.append((sheet, r + 1, eingezogenX))
+                    self.eingez.append((sheet, r + 1, eingezogenX, zahlungsbetragX, row[self.betrag]))
         return vals
 
     def getEntries(self):
@@ -250,3 +254,4 @@ class GSheet:
         d = now.strftime("%Y-%m-%d")
         for t in self.eingez:
             self.addValue(t[0], t[1], t[2], d)
+            self.addValue(t[0], t[1], t[3], t[4])
