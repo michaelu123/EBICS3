@@ -38,7 +38,7 @@ class GSheetRFSF(gsheets.GSheet):
 
     @classmethod
     def getDefaults(cls):
-        return "15/30 oder 20/40", "ADFC Radfahrschule", "ADFC-M-RFS-2023"
+        return "20/35 oder 30/45", "ADFC Radfahrschule", "ADFC-M-RFS-2024"
 
     def validSheetName(self, sname):
         return sname == "Buchungen"
@@ -54,11 +54,11 @@ class GSheetRFSF(gsheets.GSheet):
         kurs = row[self.kursFrage]
         if self.betrag not in row:
             if kurs.endswith('G'):
-                row[self.betrag] = "15" if mitglied else "30"
+                row[self.betrag] = "20" if mitglied else "35"
             elif kurs.endswith('A'):
-                row[self.betrag] = "20" if mitglied else "40"
+                row[self.betrag] = "30" if mitglied else "45"
             elif kurs.endswith('S'):
-                row[self.betrag] = "15" if mitglied else "30"
+                row[self.betrag] = "20" if mitglied else "35"
             else:
                 showerror("Kursname", "Unbekannt:" + kurs)
         row[self.betrag] = Decimal(row[self.betrag].replace(',', '.'))  # 3,14 -> 3.14

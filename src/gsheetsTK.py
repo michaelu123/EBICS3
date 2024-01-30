@@ -36,7 +36,7 @@ class GSheetTK(gsheets.GSheet):
 
     @classmethod
     def getDefaults(cls):
-        return "10/15", "ADFC Technikkurse", "ADFC-M-TK-2023"
+        return "10/20", "ADFC Technikkurse", "ADFC-M-TK-2024"
 
     def validSheetName(self, sname):
         return sname.startswith("Buchungen")
@@ -50,6 +50,6 @@ class GSheetTK(gsheets.GSheet):
     def checkBetrag(self, row):
         mitglied = row[self.mitglied] != ""
         if self.betrag not in row:
-            row[self.betrag] = "10" if mitglied else "15"
+            row[self.betrag] = "10" if mitglied else "20"
         row[self.betrag] = Decimal(row[self.betrag].replace(',', '.'))  # 3,14 -> 3.14
         return True

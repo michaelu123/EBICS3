@@ -137,7 +137,7 @@ def isLatin(s):
 def convertToIsoDate(ts):  # 06.03.2022 17:28:38 -> 2022-03-06
     if ts[2] == '.' and ts[5] == '.':
         return ts[6:10] + "-" + ts[3:5] + "-" + ts[0:2]
-    return "2023-01-01"  # ??
+    return "2024-01-01"  # ??
 
 
 klasses = {

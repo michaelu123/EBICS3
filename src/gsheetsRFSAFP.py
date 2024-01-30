@@ -1,5 +1,5 @@
 import gsheets
-
+from decimal import Decimal
 
 class GSheetRFSAFP(gsheets.GSheet):
     def __init__(self, stdBetrag, stdZweck):
@@ -16,14 +16,16 @@ class GSheetRFSAFP(gsheets.GSheet):
         self.datum = ebicsnames[4]
 
         # Felder die wir überprüfen
-        self.formnames = formnames = ["Vorname", "Name", "Zustimmung zur SEPA-Lastschrift", "Bestätigung",
+        self.formnames = formnames = ["Vorname", "Name", "ADFC-Mitgliedsnummer falls Mitglied",
+                                      "Zustimmung zur SEPA-Lastschrift", "Bestätigung",
                                       "Verifikation", "Anmeldebestätigung"]
         self.vorname = formnames[0]
         self.name = formnames[1]
-        self.zustimmung = formnames[2]
-        self.bestätigung = formnames[3]  # Bestätigung der Teilnahmebedingungen
-        self.verifikation = formnames[4]
-        self.anmeldebest = formnames[5]  # wird vom Skript Radfahrschule/Anmeldebestätigung senden ausgefüllt
+        self.mitglied = formnames[2]
+        self.zustimmung = formnames[3]
+        self.bestätigung = formnames[4]  # Bestätigung der Teilnahmebedingungen
+        self.verifikation = formnames[5]
+        self.anmeldebest = formnames[6]  # wird vom Skript Radfahrschule/Anmeldebestätigung senden ausgefüllt
 
         # diese Felder fügen wir hinzu
         self.zusatzFelder = zusatzFelder = ["Eingezogen", "Zahlungseingang", "Kommentar", "Zahlungsbetrag"]
@@ -34,7 +36,7 @@ class GSheetRFSAFP(gsheets.GSheet):
 
     @classmethod
     def getDefaults(cls):
-        return "30", "ADFC Radfahrschule", "ADFC-M-RFSFP-2023"
+        return "20/35", "ADFC Radfahrschule", "ADFC-M-RFSFP-2024"
 
     def validSheetName(self, sname):
         return sname == "Buchungen"
@@ -43,4 +45,11 @@ class GSheetRFSAFP(gsheets.GSheet):
         inh = row[self.ktoinh]
         if len(inh) < 5 or inh.startswith("dto") or inh.startswith("ditto"):
             row[self.ktoinh] = row[self.vorname] + " " + row[self.name]
+        return True
+
+    def checkBetrag(self, row):
+        mitglied = row[self.mitglied] != ""
+        if self.betrag not in row:
+            row[self.betrag] = "20" if mitglied else "35"
+        row[self.betrag] = Decimal(row[self.betrag].replace(',', '.'))  # 3,14 -> 3.14
         return True

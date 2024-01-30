@@ -218,7 +218,7 @@ class GSheet:
                     # Hier können wir einziehen!
                     vals.append({x: row[x] for x in self.ebicsnames})
                     # Merken wo das Eingezogen-Datum gespeichert wird, nachdem ebics.xml geschrieben wurde
-                    self.eingez.append((sheet, r + 1, eingezogenX, zahlungsbetragX, row[self.betrag]))
+                    self.eingez.append((sheet, r + 1, eingezogenX, zahlungsbetragX, str(row[self.betrag])))
         return vals
 
     def getEntries(self):
@@ -240,12 +240,17 @@ class GSheet:
         col0 = "" if col < 26 else chr(ord('A') + int(col / 26) - 1)  # A B ... Z AA AB ... AZ BA BB ... BZ ...
         col1 = chr(ord('A') + int(col % 26))
         srange = sheetName + "!" + col0 + col1 + str(row + 1)  # 0,0-> A1, 1,2->C2 2,1->B3
-        try:
+        if row == 0:
+            try:
+                result = self.ssheet.values().update(spreadsheetId=self.spreadSheetId,
+                                                     range=srange, valueInputOption="RAW", body=body).execute()
+            except:
+                result = self.ssheet.values().append(spreadsheetId=self.spreadSheetId,
+                                                     range=srange, valueInputOption="RAW", body=body).execute()
+        else:
             result = self.ssheet.values().update(spreadsheetId=self.spreadSheetId,
                                                  range=srange, valueInputOption="RAW", body=body).execute()
-        except:
-            result = self.ssheet.values().append(spreadsheetId=self.spreadSheetId,
-                                                 range=srange, valueInputOption="RAW", body=body).execute()
+
         logging.log(logging.INFO, "result %s", result)
 
     def fillEingezogen(self):
