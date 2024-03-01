@@ -45,7 +45,8 @@ def pyinst(path):
 
 
 class GSheet:
-    def __init__(self, stdBetrag, stdZweck):
+    def __init__(self, kursArg, stdBetrag, stdZweck):
+        self.kursArg = kursArg
         self.stdbetrag = stdBetrag
         self.stdzweck = stdZweck
         self.ssheet = None
@@ -70,6 +71,7 @@ class GSheet:
         # Felder die wir überprüfen
         self.zustimmung = ""
         self.verifikation = ""
+        self.kursName = "---"
 
         # diese Felder fügen wir hinzu
         self.zusatzFelder = []
@@ -149,8 +151,8 @@ class GSheet:
         return True
 
     def checkRow(self, row):
-        if self.eingezogen in row and row[self.eingezogen] == "":
-            pass
+        if self.kursArg != "" and self.kursName in row and not row[self.kursName].startswith(self.kursArg):
+            return False
         # IBAN angegeben?
         if self.iban not in row.keys() or row[self.iban] == "":
             return False

@@ -49,17 +49,22 @@ class CheckBoxes(Frame):
                 x = i
         if ssum == 1:
             b, z, m = self.defaults[x]
+            self.gui.mandat = m
+            self.gui.kursArgLE.set("")
             self.gui.betragLE.set(b)
             self.gui.zweckLE.set(z)
             self.gui.mandatLE.set(m)
+            self.gui.kursArgLE.config(state=NORMAL)
             self.gui.betragLE.config(state=NORMAL)
             self.gui.zweckLE.config(state=NORMAL)
             self.gui.mandatLE.config(state=NORMAL)
         else:
             # Kein Standard-Betrag/Zweck bei mehrfach-Selektion
+            self.gui.kursArgLE.set("")
             self.gui.betragLE.set("")
             self.gui.zweckLE.set("")
             self.gui.mandatLE.set("")
+            self.gui.kursArgLE.config(state=DISABLED)
             self.gui.betragLE.config(state=DISABLED)
             self.gui.zweckLE.config(state=DISABLED)
             self.gui.mandatLE.config(state=DISABLED)
@@ -90,13 +95,19 @@ class ButtonEntry(Frame):
 
 
 class LabelEntry(Frame):
-    def __init__(self, master, labeltext, stringtext, w):
+    def __init__(self, master, labeltext, stringtext, w, command=None):
         super().__init__(master)
         self.label = Label(self, text=labeltext, bd=4, width=15, height=0, relief=RIDGE)
         self.svar = StringVar()
         self.svar.set(stringtext)
-        self.entry = Entry(self, textvariable=self.svar, bd=4,
-                           width=w, borderwidth=2)
+        if command is None:
+            self.entry = Entry(self, textvariable=self.svar, bd=4,
+                               width=w, borderwidth=2)
+        else:
+            cmd = self.register(command)
+            self.entry = Entry(self, textvariable=self.svar, bd=4,
+                               width=w, borderwidth=2,
+                               validatecommand=(cmd,"%P"), validate="key")
         self.grid_rowconfigure(0, weight=0)
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=1)
@@ -134,12 +145,18 @@ class LabelOM(Frame):
 
 
 class MyApp(Frame):
+    def xxx(self, txt):
+        self.mandatLE.set(self.mandat + "-" + txt)
+        return True
+
     def __init__(self, master):
         super().__init__(master)
         w = 50
         self.sheetsBE = CheckBoxes(master, self, "Sheets", ebics.getKlasses())
         self.templateBE = ButtonEntry(master, "Template-Datei", ebics.templateFileDefault, w, self.templFileSetter)
         self.outputLE = LabelEntry(master, "Ausgabedatei", "ebics.xml", w)
+        self.kursArgLE = LabelEntry(master, "Kursname", "", w, command=self.xxx)
+        self.kursArgLE.config(state=DISABLED)
         self.betragLE = LabelEntry(master, "Betrag", "", w)
         self.betragLE.config(state=DISABLED)
         self.zweckLE = LabelEntry(master, "Zweck", "", w)
@@ -152,18 +169,19 @@ class MyApp(Frame):
 
         for x in range(1):
             Grid.columnconfigure(master, x, weight=1)
-        for y in range(8):
+        for y in range(9):
             Grid.rowconfigure(master, y, weight=1)
 
         self.sheetsBE.grid(row=0, column=0, sticky="we")
         self.templateBE.grid(row=1, column=0, sticky="we")
         self.outputLE.grid(row=2, column=0, sticky="we")
-        self.betragLE.grid(row=3, column=0, sticky="we")
-        self.zweckLE.grid(row=4, column=0, sticky="we")
-        self.mandatLE.grid(row=5, column=0, sticky="we")
-        self.checkBtn.grid(row=6, column=0, sticky="w")
-        self.testBtn.grid(row=7, column=0, sticky="w")
-        self.startBtn.grid(row=8, column=0, sticky="w")
+        self.kursArgLE.grid(row=3, column=0, sticky="we")
+        self.betragLE.grid(row=4, column=0, sticky="we")
+        self.zweckLE.grid(row=5, column=0, sticky="we")
+        self.mandatLE.grid(row=6, column=0, sticky="we")
+        self.checkBtn.grid(row=7, column=0, sticky="w")
+        self.testBtn.grid(row=8, column=0, sticky="w")
+        self.startBtn.grid(row=9, column=0, sticky="w")
 
     def templFileSetter(self):
         x = askopenfilename(title="Template Datei auswählen", defaultextension=".xml", filetypes=[("XML", ".xml")])
@@ -173,6 +191,7 @@ class MyApp(Frame):
         eb = ebics.Ebics(
                    self.sheetsBE.get(),
                    self.outputLE.get(),
+                   self.kursArgLE.get(),
                    self.betragLE.get(),
                    self.zweckLE.get(),
                    self.mandatLE.get(),
@@ -199,6 +218,7 @@ class MyApp(Frame):
         eb = ebics.Ebics(
                    self.sheetsBE.get(),
                    self.outputLE.get(),
+                   self.kursArgLE.get(),
                    self.betragLE.get(),
                    self.zweckLE.get(),
                    self.mandatLE.get(),

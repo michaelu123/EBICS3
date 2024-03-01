@@ -3,8 +3,8 @@ from decimal import Decimal
 
 
 class GSheetTK(gsheets.GSheet):
-    def __init__(self, _stdBetrag, stdZweck):
-        super().__init__("", stdZweck)
+    def __init__(self, kursArg, _stdBetrag, stdZweck):
+        super().__init__(kursArg, "", stdZweck)
         self.spreadSheetId = "1r4WEgWskyJrHNRgWLOZ2n7pgho-8S6kSo7cm1po1pt4"  # Backend-Technikkurse
 
         # diese Felder brauchen wir für den Einzug
@@ -17,7 +17,7 @@ class GSheetTK(gsheets.GSheet):
 
         # Felder die wir überprüfen
         self.formnames = formnames = ["Vorname", "Name", "ADFC-Mitgliedsnummer", "Zustimmung zur SEPA-Lastschrift",
-                                      "Bestätigung", "Verifikation", "Anmeldebestätigung"]
+                                      "Bestätigung", "Verifikation", "Anmeldebestätigung", "Welche Kurse möchtest Du belegen?"]
         self.vorname = formnames[0]
         self.name = formnames[1]
         self.mitglied = formnames[2]
@@ -25,6 +25,7 @@ class GSheetTK(gsheets.GSheet):
         self.bestätigung = formnames[4]  # Bestätigung der Teilnahmebedingungen
         self.verifikation = formnames[5]
         self.anmeldebest = formnames[6]  # wird vom Skript Radfahrschule/Anmeldebestätigung senden ausgefüllt
+        self.kursName = formnames[7]
 
         # diese Felder fügen wir hinzu
         self.zusatzFelder = zusatzFelder = ["Eingezogen", "Zahlungseingang",

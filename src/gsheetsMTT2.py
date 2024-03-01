@@ -6,7 +6,7 @@ import openpyxl
 
 
 class GSheetMTT2:
-    def __init__(self, _stdBetrag, _stdZweck):
+    def __init__(self, _kursArg, _stdBetrag, _stdZweck):
         # diese Felder brauchen wir für den Einzug
         self.ebicsnames = ebicsnames = ["Vorname", "Name", "Kontoinhaber", "IBAN", "Preis", "Datum"]
         self.vorname = ebicsnames[0]

@@ -4,8 +4,8 @@ from tkinter.messagebox import *
 
 
 class GSheetRFSF(gsheets.GSheet):
-    def __init__(self, stdBetrag, stdZweck):
-        super().__init__(stdBetrag, stdZweck)
+    def __init__(self, kursArg, stdBetrag, stdZweck):
+        super().__init__(kursArg, stdBetrag, stdZweck)
         self.spreadSheetId = "1K5wHJrEP0vP-tuM7gqSOUdEfq7OzFt5iCjnnjyzWzxA"
         self.kursFrage = "Welchen Kurs möchten Sie belegen?"
         # diese Felder brauchen wir für den Einzug
@@ -20,7 +20,7 @@ class GSheetRFSF(gsheets.GSheet):
         # Felder die wir überprüfen
         self.formnames = formnames = ["Vorname", "Name", "ADFC-Mitgliedsnummer falls Mitglied",
                                       "Zustimmung zur SEPA-Lastschrift", "Bestätigung",
-                                      "Verifikation", "Anmeldebestätigung"]
+                                      "Verifikation", "Anmeldebestätigung", "Welchen Kurs möchten Sie belegen?"]
         self.vorname = formnames[0]
         self.name = formnames[1]
         self.mitglied = formnames[2]
@@ -28,6 +28,7 @@ class GSheetRFSF(gsheets.GSheet):
         self.bestätigung = formnames[4]  # Bestätigung der Teilnahmebedingungen
         self.verifikation = formnames[5]
         self.anmeldebest = formnames[6]  # wird vom Skript Radfahrschule/Anmeldebestätigung senden ausgefüllt
+        self.kursName = formnames[7]
 
         # diese Felder fügen wir hinzu
         self.zusatzFelder = zusatzFelder = ["Eingezogen", "Zahlungseingang", "Kommentar", "Zahlungsbetrag"]
@@ -38,7 +39,7 @@ class GSheetRFSF(gsheets.GSheet):
 
     @classmethod
     def getDefaults(cls):
-        return "20/35 oder 30/45", "ADFC Radfahrschule", "ADFC-M-RFS-2024"
+        return "20/35 oder 30/45", "ADFC Radfahrschule", "ADFC-M-RFSF-2024"
 
     def validSheetName(self, sname):
         return sname == "Buchungen"

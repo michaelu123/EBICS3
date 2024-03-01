@@ -2,8 +2,8 @@ import gsheets
 from decimal import Decimal
 
 class GSheetRFSAFP(gsheets.GSheet):
-    def __init__(self, stdBetrag, stdZweck):
-        super().__init__(stdBetrag, stdZweck)
+    def __init__(self, kursArg, stdBetrag, stdZweck):
+        super().__init__(kursArg, stdBetrag, stdZweck)
         self.spreadSheetId = "1KCh-3tpb1ciF3KVxJeRty0CDDd40vE0UTLGC2bqE8uo"
 
         # diese Felder brauchen wir für den Einzug
@@ -18,7 +18,7 @@ class GSheetRFSAFP(gsheets.GSheet):
         # Felder die wir überprüfen
         self.formnames = formnames = ["Vorname", "Name", "ADFC-Mitgliedsnummer falls Mitglied",
                                       "Zustimmung zur SEPA-Lastschrift", "Bestätigung",
-                                      "Verifikation", "Anmeldebestätigung"]
+                                      "Verifikation", "Anmeldebestätigung", "Welchen Kurs möchten Sie belegen?"]
         self.vorname = formnames[0]
         self.name = formnames[1]
         self.mitglied = formnames[2]
@@ -26,6 +26,7 @@ class GSheetRFSAFP(gsheets.GSheet):
         self.bestätigung = formnames[4]  # Bestätigung der Teilnahmebedingungen
         self.verifikation = formnames[5]
         self.anmeldebest = formnames[6]  # wird vom Skript Radfahrschule/Anmeldebestätigung senden ausgefüllt
+        self.kursName = formnames[7]
 
         # diese Felder fügen wir hinzu
         self.zusatzFelder = zusatzFelder = ["Eingezogen", "Zahlungseingang", "Kommentar", "Zahlungsbetrag"]
@@ -36,7 +37,7 @@ class GSheetRFSAFP(gsheets.GSheet):
 
     @classmethod
     def getDefaults(cls):
-        return "20/35", "ADFC Radfahrschule", "ADFC-M-RFSFP-2024"
+        return "20/35", "ADFC Radfahrschule", "ADFC-M-RFSAFP-2024"
 
     def validSheetName(self, sname):
         return sname == "Buchungen"

@@ -2,8 +2,8 @@ import gsheets
 
 
 class GSheetRFSA(gsheets.GSheet):
-    def __init__(self, stdBetrag, stdZweck):
-        super().__init__(stdBetrag, stdZweck)
+    def __init__(self, kursArg, stdBetrag, stdZweck):
+        super().__init__(kursArg, stdBetrag, stdZweck)
         self.spreadSheetId = "163EnaAw4A0_BP6zuo51VSyz02MNHTfI3_t8MyQ2JUP4"
 
         # diese Felder brauchen wir für den Einzug
@@ -17,13 +17,14 @@ class GSheetRFSA(gsheets.GSheet):
 
         # Felder die wir überprüfen
         self.formnames = formnames = ["Vorname", "Name", "Zustimmung zur SEPA-Lastschrift", "Bestätigung",
-                                      "Verifikation", "Anmeldebestätigung"]
+                                      "Verifikation", "Anmeldebestätigung", "Welchen Kurs möchten Sie belegen?"]
         self.vorname = formnames[0]
         self.name = formnames[1]
         self.zustimmung = formnames[2]
         self.bestätigung = formnames[3]  # Bestätigung der Teilnahmebedingungen
         self.verifikation = formnames[4]
         self.anmeldebest = formnames[5]  # wird vom Skript Radfahrschule/Anmeldebestätigung senden ausgefüllt
+        self.kursName = formnames[6]
 
         # diese Felder fügen wir hinzu
         self.zusatzFelder = zusatzFelder = ["Eingezogen", "Zahlungseingang", "Kommentar", "Zahlungsbetrag"]
@@ -34,7 +35,7 @@ class GSheetRFSA(gsheets.GSheet):
 
     @classmethod
     def getDefaults(cls):
-        return "120", "ADFC Radfahrschule", "ADFC-M-RFS-2024"
+        return "120", "ADFC Radfahrschule", "ADFC-M-RFSA-2024"
 
     def validSheetName(self, sname):
         return sname == "Buchungen"

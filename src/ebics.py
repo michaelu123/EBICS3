@@ -156,9 +156,10 @@ def getKlasses():
 
 
 class Ebics:
-    def __init__(self, sels, outputfile, stdbetrag, stdzweck, mandat, ebics):
+    def __init__(self, sels, outputfile, kursArg, stdbetrag, stdzweck, mandat, ebics):
         self.sels = sels
         self.outputFile = outputfile
+        self.kursArg = kursArg
         self.stdbetrag = stdbetrag
         self.stdzweck = stdzweck
         self.mandat = mandat
@@ -255,7 +256,7 @@ class Ebics:
             stdBetrag = self.stdbetrag if self.stdbetrag != "" else defaults[0]
             stdZweck = self.stdzweck if self.stdzweck != "" else defaults[1]
             self.mandat = defaults[2]
-            self.gsheet = klass(stdBetrag, stdZweck)
+            self.gsheet = klass(self.kursArg, stdBetrag, stdZweck)
             self.gsheets.append(self.gsheet)
             self.gsheet.getEntries()
 
@@ -288,7 +289,7 @@ class Ebics:
             stdZweck = self.stdzweck if self.stdzweck != "" else defaults[1]
             if self.mandat == "":  # GUI may have overridden mandat, but only for one spreadsheet
                 self.mandat = defaults[2]
-            self.gsheet = klass(stdBetrag, stdZweck)
+            self.gsheet = klass(self.kursArg, stdBetrag, stdZweck)
             self.gsheets.append(self.gsheet)
             entries = self.gsheet.getEntries()
             entries = self.fillin2(ttuple, entries)
