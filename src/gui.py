@@ -18,59 +18,41 @@ from gsheets import pyinst
 # from oauth2client.service_account import ServiceAccountCredentials
 
 
-class CheckBoxes(Frame):
+class RadioBoxes(Frame):
     def __init__(self, master, gui, labeltext, klasses):
         super().__init__(master)
         self.master = master
         self.gui = gui
         self.names = list(klasses.keys())
         self.boxes = []
-        self.values = []
+        self.value = IntVar()
         self.klasses = klasses
         self.defaults = []
         self.label = Label(self, text=labeltext, bd=4, width=15, height=0, relief=RIDGE)
         self.label.grid(row=0, column=0, sticky="w")
         for i, s in enumerate(self.names):
-            v = IntVar()
-            box = Checkbutton(self, text=s, variable=v, command=self.setVals)
+            box = Radiobutton(self, text=s, value=i+1, variable=self.value, command=self.setVal)
             box.grid(row=0, column=i + 1, sticky="w")
             self.boxes.append(box)
-            self.values.append(v)
             klass = klasses.get(s)
             self.defaults.append(klass.getDefaults())
 
-    def setVals(self):
-        ssum = 0
-        x = 0
-        for i in range(len(self.values)):
-            v = self.values[i].get()
-            ssum += v
-            if v == 1:
-                x = i
-        if ssum == 1:
-            b, z, m = self.defaults[x]
-            self.gui.mandat = m
-            self.gui.kursArgLE.set("")
-            self.gui.betragLE.set(b)
-            self.gui.zweckLE.set(z)
-            self.gui.mandatLE.set(m)
-            self.gui.kursArgLE.config(state=NORMAL)
-            self.gui.betragLE.config(state=NORMAL)
-            self.gui.zweckLE.config(state=NORMAL)
-            self.gui.mandatLE.config(state=NORMAL)
-        else:
-            # Kein Standard-Betrag/Zweck bei mehrfach-Selektion
-            self.gui.kursArgLE.set("")
-            self.gui.betragLE.set("")
-            self.gui.zweckLE.set("")
-            self.gui.mandatLE.set("")
-            self.gui.kursArgLE.config(state=DISABLED)
-            self.gui.betragLE.config(state=DISABLED)
-            self.gui.zweckLE.config(state=DISABLED)
-            self.gui.mandatLE.config(state=DISABLED)
+    def setVal(self):
+        i = self.value.get()-1
+        b, z, m = self.defaults[i]
+        self.gui.mandat = m
+        self.gui.kursArgLE.set("")
+        self.gui.betragLE.set(b)
+        self.gui.zweckLE.set(z)
+        self.gui.mandatLE.set(m)
+        self.gui.kursArgLE.config(state=NORMAL)
+        self.gui.betragLE.config(state=NORMAL)
+        self.gui.zweckLE.config(state=NORMAL)
+        self.gui.mandatLE.config(state=NORMAL)
 
     def get(self):
-        return {self.names[i]: self.values[i].get() for i in range(len(self.names))}
+        i = self.value.get() -1
+        return {self.names[i]: i}
 
 
 class ButtonEntry(Frame):
@@ -145,17 +127,17 @@ class LabelOM(Frame):
 
 
 class MyApp(Frame):
-    def xxx(self, txt):
-        self.mandatLE.set(self.mandat + "-" + txt)
+    def setMandat(self, txt):
+        self.mandatLE.set(self.mandat + "-" + txt.replace("_", "-"))
         return True
 
     def __init__(self, master):
         super().__init__(master)
         w = 50
-        self.sheetsBE = CheckBoxes(master, self, "Sheets", ebics.getKlasses())
-        self.templateBE = ButtonEntry(master, "Template-Datei", ebics.templateFileDefault, w, self.templFileSetter)
+        self.sheetsBE = RadioBoxes(master, self, "Sheets", ebics.getKlasses())
+        # self.templateBE = ButtonEntry(master, "Template-Datei", ebics.templateFileDefault, w, self.templFileSetter)
         self.outputLE = LabelEntry(master, "Ausgabedatei", "ebics.xml", w)
-        self.kursArgLE = LabelEntry(master, "Kursname", "", w, command=self.xxx)
+        self.kursArgLE = LabelEntry(master, "Kursname", "", w, command=self.setMandat)
         self.kursArgLE.config(state=DISABLED)
         self.betragLE = LabelEntry(master, "Betrag", "", w)
         self.betragLE.config(state=DISABLED)
@@ -173,7 +155,7 @@ class MyApp(Frame):
             Grid.rowconfigure(master, y, weight=1)
 
         self.sheetsBE.grid(row=0, column=0, sticky="we")
-        self.templateBE.grid(row=1, column=0, sticky="we")
+        # self.templateBE.grid(row=1, column=0, sticky="we")
         self.outputLE.grid(row=2, column=0, sticky="we")
         self.kursArgLE.grid(row=3, column=0, sticky="we")
         self.betragLE.grid(row=4, column=0, sticky="we")
@@ -183,23 +165,30 @@ class MyApp(Frame):
         self.testBtn.grid(row=8, column=0, sticky="w")
         self.startBtn.grid(row=9, column=0, sticky="w")
 
-    def templFileSetter(self):
-        x = askopenfilename(title="Template Datei auswählen", defaultextension=".xml", filetypes=[("XML", ".xml")])
-        self.templateBE.set(x)
+    # def templFileSetter(self):
+    #     x = askopenfilename(title="Template Datei auswählen", defaultextension=".xml", filetypes=[("XML", ".xml")])
+    #     self.templateBE.set(x)
 
     def check(self):
+        sels = self.sheetsBE.get()
+        sammel = sels.get("SAMMEL") is not None
+
         eb = ebics.Ebics(
-                   self.sheetsBE.get(),
+                   sels,
                    self.outputLE.get(),
                    self.kursArgLE.get(),
                    self.betragLE.get(),
                    self.zweckLE.get(),
                    self.mandatLE.get(),
-                   self.templateBE.get())
+                   # self.templateBE.get()
+            )
         try:
             eb.check()
             stats = eb.getStatistics()
-            msg = f"Anzahl Abbuchungsaufträge: {stats[0]}\nUnverifizierte Email-Adresse: {stats[1]}\nSchon bezahlt: {stats[2]}\nAbgebucht: {stats[3]}\nNoch abzubuchen: {stats[4]}"
+            if sammel:
+                msg = f"Anzahl Überweisungsaufträge: {stats[0]}\nÜberwiesen: {stats[3]}\nNoch zu überweisen: {stats[4]}"
+            else:
+                msg = f"Anzahl Abbuchungsaufträge: {stats[0]}\nUnverifizierte Email-Adresse: {stats[1]}\nSchon bezahlt: {stats[2]}\nAbgebucht: {stats[3]}\nNoch abzubuchen: {stats[4]}"
             showinfo("Ergebnis", msg)
         except Exception as e:
             logging.exception("Fehler")
@@ -215,6 +204,8 @@ class MyApp(Frame):
         if self.outputLE.get() == "":
             showerror("Fehler", "keine Ausgabedatei")
             return
+        sels = self.sheetsBE.get()
+        sammel = sels.get("SAMMEL") is not None
         eb = ebics.Ebics(
                    self.sheetsBE.get(),
                    self.outputLE.get(),
@@ -222,11 +213,15 @@ class MyApp(Frame):
                    self.betragLE.get(),
                    self.zweckLE.get(),
                    self.mandatLE.get(),
-                   self.templateBE.get())
+                   # self.templateBE.get()
+        )
         try:
             res = eb.createEbicsXml(setEingezogen)
             stats = eb.getStatistics()
-            msg = f"Anzahl Abbuchungsaufträge: {stats[0]}\nUnverifizierte Email-Adresse: {stats[1]}\nSchon bezahlt: {stats[2]}\nAbgebucht: {stats[3]}\nNoch abzubuchen: {stats[4]}"
+            if sammel:
+                msg = f"Anzahl Überweisungsaufträge: {stats[0]}\nÜberwiesen: {stats[3]}\nNoch zu überweisen: {stats[4]}"
+            else:
+                msg = f"Anzahl Abbuchungsaufträge: {stats[0]}\nUnverifizierte Email-Adresse: {stats[1]}\nSchon bezahlt: {stats[2]}\nAbgebucht: {stats[3]}\nNoch abzubuchen: {stats[4]}"
             if res is None:
                 showinfo("Nichts gefunden", msg)
             else:

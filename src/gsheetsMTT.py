@@ -7,7 +7,7 @@ import gsheets
 class GSheetMTT(gsheets.GSheet):
     def __init__(self, _stdBetrag, stdZweck):
         super().__init__("", stdZweck)
-        self.spreadSheetId = "1LNopZRbkggBm4OtRRp-YtRBFKKv1z8no0xLEhk-K8mo"  # Backend-Technikkurse
+        self.spreadSheetId = "1LNopZRbkggBm4OtRRp-YtRBFKKv1z8no0xLEhk-K8mo"  # Test-Backend-MTT
 
         # Buchungen
         # diese Felder brauchen wir für den Einzug

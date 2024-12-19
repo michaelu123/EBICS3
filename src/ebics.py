@@ -13,13 +13,14 @@ import gsheetsRFSAFP
 import gsheetsRFSF
 import gsheetsSaisonKarte
 import gsheetsTK
+import gsheetsSammelUeberweisungen
 
-templateFileDefault = "Default"
+# templateFileDefault = "Default"
 decCtx = getcontext()
 decCtx.prec = 7  # 5.2 digits, max=99999.99
 charset = digits + ascii_uppercase
 
-xmls = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+xmlsAbbuchung = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.008.001.02" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:pain.008.001.02 pain.008.001.02.xsd">
     <CstmrDrctDbtInitn>
         <GrpHdr>
@@ -107,6 +108,68 @@ xmls = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 </Document>
 """
 
+xmlsUeberweisung = """<?xml version="1.0" encoding="UTF-8" ?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.09" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:iso:std:iso:20022:tech:xsd:pain.001.001.09 pain.001.001.09.xsd">
+    <CstmrCdtTrfInitn>
+        <GrpHdr>
+            <MsgId>MSG26022a8fb83cf1a515099ade7bdc3afc</MsgId>
+            <CreDtTm>2024-12-18T18:29:36.079Z</CreDtTm>
+            <NbOfTxs>1</NbOfTxs>
+            <CtrlSum>0.01</CtrlSum>
+            <InitgPty>
+                <Nm>ALLG. DEUTSCHER FAHRRAD-CLUB KREISVERBAND MÜNCH. ADFC</Nm>
+            </InitgPty>
+        </GrpHdr>
+        <PmtInf>
+            <PmtInfId>VID-1705419118069KOv1HjY5</PmtInfId>
+            <PmtMtd>TRF</PmtMtd>
+            <NbOfTxs>1</NbOfTxs>
+            <CtrlSum>0.01</CtrlSum>
+            <PmtTpInf>
+                <SvcLvl>
+                    <Cd>SEPA</Cd>
+                </SvcLvl>
+            </PmtTpInf>
+            <ReqdExctnDt>
+                <Dt>1999-01-01</Dt>
+            </ReqdExctnDt>
+            <Dbtr>
+                <Nm>ALLG. DEUTSCHER FAHRRAD-CLUB KREISVERBAND MÜNCH. ADFC</Nm>
+            </Dbtr>
+            <DbtrAcct>
+                <Id>
+                    <IBAN>DE62701500000904157781</IBAN>
+                </Id>
+            </DbtrAcct>
+            <DbtrAgt>
+                <FinInstnId>
+                    <BICFI>SSKMDEMMXXX</BICFI>
+                </FinInstnId>
+            </DbtrAgt>
+            <ChrgBr>SLEV</ChrgBr>
+            <CdtTrfTxInf>
+                <PmtId>
+                    <EndToEndId>NOTPROVIDED</EndToEndId>
+                </PmtId>
+                <Amt>
+                    <InstdAmt Ccy="EUR">0.01</InstdAmt>
+                </Amt>
+                <Cdtr>
+                    <Nm>Andrea Halbig</Nm>
+                </Cdtr>
+                <CdtrAcct>
+                    <Id>
+                        <IBAN>DE11701694640000408697</IBAN>
+                    </Id>
+                </CdtrAcct>
+                <RmtInf>
+                    <Ustrd>Übungsleiterpauschale</Ustrd>
+                </RmtInf>
+            </CdtTrfTxInf>
+        </PmtInf>
+    </CstmrCdtTrfInitn>
+</Document>
+"""
 
 def randomId(length):
     r1 = random.choice(ascii_uppercase)  # first a letter
@@ -137,6 +200,8 @@ def isLatin(s):
 def convertToIsoDate(ts):  # 06.03.2022 17:28:38 -> 2022-03-06
     if ts[2] == '.' and ts[5] == '.':
         return ts[6:10] + "-" + ts[3:5] + "-" + ts[0:2]
+    if ts[4] == '-' and ts[7] == '-':
+        return ts
     return "2024-01-01"  # ??
 
 
@@ -147,6 +212,7 @@ klasses = {
     "SK": gsheetsSaisonKarte.GSheetSK,
     "TK": gsheetsTK.GSheetTK,
     "MTT": gsheetsMTT2.GSheetMTT2,  # edoobox
+    "SAMMEL": gsheetsSammelUeberweisungen.GSheetSammelueberweisungen,
     # "MTT": gsheetsMTT.GSheetMTT # Google Forms/Sheets
 }
 
@@ -156,17 +222,18 @@ def getKlasses():
 
 
 class Ebics:
-    def __init__(self, sels, outputfile, kursArg, stdbetrag, stdzweck, mandat, ebics):
+    def __init__(self, sels, outputfile, kursArg, stdbetrag, stdzweck, mandat):   #, ebics):
         self.sels = sels
         self.outputFile = outputfile
         self.kursArg = kursArg
         self.stdbetrag = stdbetrag
         self.stdzweck = stdzweck
         self.mandat = mandat
-        self.ebics = ebics
+        # self.ebics = ebics
         self.gsheets = []
         self.xmlt = None
         self.gsheet = None
+        self.sammel = self.sels.get("SAMMEL") is not None
 
     def fillinIDs(self):
         msgid = self.xmlt.getElementsByTagName("MsgId")
@@ -186,7 +253,7 @@ class Ebics:
 
     def fillin1(self):
         pmtInf = self.xmlt.getElementsByTagName("PmtInf")[0]
-        drctDbtTxInf = pmtInf.getElementsByTagName("DrctDbtTxInf")[0]
+        drctDbtTxInf = pmtInf.getElementsByTagName("CdtTrfTxInf" if self.sammel else "DrctDbtTxInf")[0]
         x = pmtInf.childNodes.index(drctDbtTxInf)
         drctDbtTxInf = copy.deepcopy(drctDbtTxInf)
         nl1 = pmtInf.childNodes[x - 1]
@@ -218,16 +285,20 @@ class Ebics:
             amt[0].childNodes[0] = self.xmlt.createTextNode(str(entry[self.gsheet.betrag]))
             ustrd = newtx.getElementsByTagName("Ustrd")
             ustrd[0].childNodes[0] = self.xmlt.createTextNode(str(zweck))
-            mndtId = newtx.getElementsByTagName("MndtId")
-            mandat = entry.get("mandat")
-            if mandat is None:
-                mandat = self.mandat
-            mndtId[0].childNodes[0] = self.xmlt.createTextNode(mandat)
+            if not self.sammel:
+                mndtId = newtx.getElementsByTagName("MndtId")
+                mandat = entry.get(self.gsheet.mandat)
+                if mandat is None:
+                    mandat = self.mandat
+                mndtId[0].childNodes[0] = self.xmlt.createTextNode(mandat)
 
-            dtOfSgntr = newtx.getElementsByTagName("DtOfSgntr")
-            timestamp = entry.get(self.gsheet.datum)
-            timestamp = convertToIsoDate(timestamp)
-            dtOfSgntr[0].childNodes[0] = self.xmlt.createTextNode(timestamp)
+                dtOfSgntr = newtx.getElementsByTagName("DtOfSgntr")
+                timestamp = entry.get(self.gsheet.datum)
+                if timestamp is None:
+                    timestamp = datetime.date.today().isoformat()
+                else:
+                    timestamp = convertToIsoDate(timestamp)
+                dtOfSgntr[0].childNodes[0] = self.xmlt.createTextNode(timestamp)
 
             pmtInf.childNodes.append(newtx)
             pmtInf.childNodes.append(copy.copy(nl1))
@@ -242,10 +313,14 @@ class Ebics:
         now = datetime.datetime.utcnow()
         d = now.isoformat(timespec="milliseconds") + "Z"
         creDtTm[0].childNodes[0] = self.xmlt.createTextNode(d)
-        reqdColltnDt = self.xmlt.getElementsByTagName("ReqdColltnDt")
+        reqdColltnDt = self.xmlt.getElementsByTagName("ReqdExctnDt" if self.sammel else "ReqdColltnDt")
         day2 = datetime.date.today() + datetime.timedelta(days=2)
         d = day2.isoformat()
-        reqdColltnDt[0].childNodes[0] = self.xmlt.createTextNode(d)
+        if self.sammel:
+            dt = reqdColltnDt[0].getElementsByTagName("Dt")
+            dt[0].childNodes[0] = self.xmlt.createTextNode(d)
+        else:
+            reqdColltnDt[0].childNodes[0] = self.xmlt.createTextNode(d)
 
     def check(self):
         for i, sel in enumerate(self.sels.keys()):
@@ -259,6 +334,7 @@ class Ebics:
             self.gsheet = klass(self.kursArg, stdBetrag, stdZweck)
             self.gsheets.append(self.gsheet)
             self.gsheet.getEntries()
+            break
 
     def addBetraege(self, entries):
         ssum = Decimal("0.00")
@@ -267,10 +343,10 @@ class Ebics:
         return ssum
 
     def createEbicsXml(self, setEingezogen):
-        template = xmls
-        if self.ebics is not None and self.ebics != "" and self.ebics != templateFileDefault:
-            with open(self.ebics, "r", encoding="utf-8") as f:
-                template = f.read()
+        template = xmlsUeberweisung if self.sammel else xmlsAbbuchung
+        # if self.ebics is not None and self.ebics != "" and self.ebics != templateFileDefault:
+        #     with open(self.ebics, "r", encoding="utf-8") as f:
+        #         template = f.read()
         if os.path.exists(self.outputFile):
             raise Exception("Datei " + self.outputFile + " existiert schon")
         self.xmlt = parseString(template)
@@ -303,7 +379,8 @@ class Ebics:
         self.fillinSumme(summe, entryCnt)
         # self.xmlt.standalone = True or "yes" has no effect
         pr = self.xmlt.toxml(encoding="utf-8")
-        pr = pr[0:36] + b' standalone="yes"' + pr[36:]  # minidom has problems with standalone param
+        if not self.sammel: # unused for xmlsUeberweisung ?!
+            pr = pr[0:36] + b' standalone="yes"' + pr[36:]  # minidom has problems with standalone param
         with open(self.outputFile, "wb") as o:
             o.write(pr)
         if not setEingezogen:

@@ -4,7 +4,7 @@ import gsheets
 class GSheetRFSA(gsheets.GSheet):
     def __init__(self, kursArg, stdBetrag, stdZweck):
         super().__init__(kursArg, stdBetrag, stdZweck)
-        self.spreadSheetId = "163EnaAw4A0_BP6zuo51VSyz02MNHTfI3_t8MyQ2JUP4"
+        self.spreadSheetId = "163EnaAw4A0_BP6zuo51VSyz02MNHTfI3_t8MyQ2JUP4" #RFSA_Backend
 
         # diese Felder brauchen wir für den Einzug
         self.ebicsnames = ebicsnames = ["Lastschrift: Name des Kontoinhabers",

@@ -6,7 +6,7 @@ from tkinter.messagebox import *
 class GSheetRFSF(gsheets.GSheet):
     def __init__(self, kursArg, stdBetrag, stdZweck):
         super().__init__(kursArg, stdBetrag, stdZweck)
-        self.spreadSheetId = "1K5wHJrEP0vP-tuM7gqSOUdEfq7OzFt5iCjnnjyzWzxA"
+        self.spreadSheetId = "1K5wHJrEP0vP-tuM7gqSOUdEfq7OzFt5iCjnnjyzWzxA"  # RFSF_Backend
         self.kursFrage = "Welchen Kurs möchten Sie belegen?"
         # diese Felder brauchen wir für den Einzug
         self.ebicsnames = ebicsnames = ["Lastschrift: Name des Kontoinhabers", "Lastschrift: IBAN-Kontonummer",

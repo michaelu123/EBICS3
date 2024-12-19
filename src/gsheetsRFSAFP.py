@@ -4,7 +4,7 @@ from decimal import Decimal
 class GSheetRFSAFP(gsheets.GSheet):
     def __init__(self, kursArg, stdBetrag, stdZweck):
         super().__init__(kursArg, stdBetrag, stdZweck)
-        self.spreadSheetId = "1KCh-3tpb1ciF3KVxJeRty0CDDd40vE0UTLGC2bqE8uo"
+        self.spreadSheetId = "1KCh-3tpb1ciF3KVxJeRty0CDDd40vE0UTLGC2bqE8uo"  # Backend Praxis
 
         # diese Felder brauchen wir für den Einzug
         self.ebicsnames = ebicsnames = ["Lastschrift: Name des Kontoinhabers",

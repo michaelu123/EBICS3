@@ -136,7 +136,8 @@ class GSheet:
             try:
                 _ = headers.index("E-Mail-Adresse")
             except:
-                continue
+                if self.__class__.__name__ != "GSheetSammelueberweisungen":
+                    continue
             for h in self.zusatzFelder:
                 if h not in headers:
                     self.addColumn(sheet, h)
@@ -161,20 +162,22 @@ class GSheet:
             print("falsche iban in", row["Sheet"], "KontoInhaber:", row[self.ktoinh], "IBAN:", row[self.iban])
             return False
         # Zustimmung erteilt?
-        if self.zustimmung not in row.keys() or row[self.zustimmung] == "":
-            print("keine Zustimmung in", row["Sheet"], "KontoInhaber:", row[self.ktoinh])
-            return False
+        if self.__class__.__name__ != "GSheetSammelueberweisungen":
+            if self.zustimmung not in row.keys() or row[self.zustimmung] == "":
+                print("keine Zustimmung in", row["Sheet"], "KontoInhaber:", row[self.ktoinh])
+                return False
+            # Email verifiziert?
+            if self.verifikation not in row.keys() or row[self.verifikation] == "":
+                self.nr_unverifiziert += 1
+                print("Emailadresse nicht verifiziert in", row["Sheet"], "KontoInhaber:",
+                      row[self.ktoinh], "Emailadresse: ", row["E-Mail-Adresse"])
+                return False
+            # Schon Zahlungseingang
+            if self.zahlungseingang in row and row[self.zahlungseingang] != "":
+                self.nr_bezahlt += 1
+                return False
         self.nr_einzug += 1
-        # Email verifiziert?
-        if self.verifikation not in row.keys() or row[self.verifikation] == "":
-            self.nr_unverifiziert += 1
-            print("Emailadresse nicht verifiziert in", row["Sheet"], "KontoInhaber:",
-                  row[self.ktoinh], "Emailadresse: ", row["E-Mail-Adresse"])
-            return False
-        # Schon Zahlungseingang
-        if self.zahlungseingang in row and row[self.zahlungseingang] != "":
-            self.nr_bezahlt += 1
-            return False
+
         # Schon eingezogen?
         if self.eingezogen in row and row[self.eingezogen] != "":
             self.nr_eingezogen += 1
