@@ -202,7 +202,7 @@ def convertToIsoDate(ts):  # 06.03.2022 17:28:38 -> 2022-03-06
         return ts[6:10] + "-" + ts[3:5] + "-" + ts[0:2]
     if ts[4] == '-' and ts[7] == '-':
         return ts
-    return "2024-01-01"  # ??
+    return "1999-01-01"  # ??
 
 
 klasses = {
@@ -287,7 +287,7 @@ class Ebics:
             ustrd[0].childNodes[0] = self.xmlt.createTextNode(str(zweck))
             if not self.sammel:
                 mndtId = newtx.getElementsByTagName("MndtId")
-                mandat = entry.get(self.gsheet.mandat)
+                mandat = entry.get("Mandat")
                 if mandat is None:
                     mandat = self.mandat
                 mndtId[0].childNodes[0] = self.xmlt.createTextNode(mandat)

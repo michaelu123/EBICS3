@@ -51,8 +51,8 @@ class RadioBoxes(Frame):
         self.gui.mandatLE.config(state=NORMAL)
 
     def get(self):
-        i = self.value.get() -1
-        return {self.names[i]: i}
+        i = self.value.get()
+        return {self.names[i-1]: i}
 
 
 class ButtonEntry(Frame):

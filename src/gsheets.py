@@ -157,7 +157,7 @@ class GSheet:
         # IBAN angegeben?
         if self.iban not in row.keys() or row[self.iban] == "":
             return False
-        row[self.iban] = row[self.iban].upper()
+        row[self.iban] = row[self.iban].strip().upper().replace(" ", "")
         if not is_iban(row[self.iban]):
             print("falsche iban in", row["Sheet"], "KontoInhaber:", row[self.ktoinh], "IBAN:", row[self.iban])
             return False

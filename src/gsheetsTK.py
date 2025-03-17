@@ -37,7 +37,7 @@ class GSheetTK(gsheets.GSheet):
 
     @classmethod
     def getDefaults(cls):
-        return "10/20", "ADFC Technikkurse", "ADFC-M-TK-2024"
+        return "10/20", "ADFC Technikkurse", "ADFC-M-TK"
 
     def validSheetName(self, sname):
         return sname.startswith("Buchungen")

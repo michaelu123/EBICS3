@@ -74,7 +74,7 @@ class GSheetMTT2:
                     buchung[self.betrag] == "" or \
                     buchung[self.iban] == "":
                 continue  # skip empty rows
-            iban = buchung[self.iban].upper()
+            iban = buchung[self.iban].upper().replace(" ","");
             buchung[self.iban] = iban
             if not is_iban(iban):
                 showerror("IBAN " + iban + " von " + buchung[self.ktoinh] + " ist ungültig")

@@ -3,7 +3,7 @@ import gsheets
 
 class GSheetSK(gsheets.GSheet):
     def __init__(self, _kursArg, _stdBetrag, _stdZweck):
-        super().__init__("", "22", "Saisonkarte 2024")
+        super().__init__("", "22", "Saisonkarte")
         self.spreadSheetId = "1IsG9HpZlDU97Sf82LG-XkTPY1stI_xONH_pDP3x72BU"  # Saisonkarten-Bestellungen
         # Mit dem aktuellen credentials.json brauchen wir dafür eine externe Linkfreigabe für adfc-muc zum Bearbeiten
 
@@ -33,7 +33,7 @@ class GSheetSK(gsheets.GSheet):
 
     @classmethod
     def getDefaults(cls):
-        return "22", "ADFC Saisonkarte", "ADFC-M-SK-2024"
+        return "22", "ADFC Saisonkarte", "ADFC-M-SK"
 
     def validSheetName(self, sname):
         return sname == "Bestellungen"
